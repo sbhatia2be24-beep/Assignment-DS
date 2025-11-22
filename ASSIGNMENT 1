@@ -1,0 +1,238 @@
+A1)
+#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[100], n = 0, choice, pos, val, key;
+
+    while (true) {
+        cout << "\n---- MENU ----\n";
+        cout << "1. CREATE\n2. DISPLAY\n3. INSERT\n4. DELETE\n5. LINEAR SEARCH\n6. EXIT\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+
+        case 1:  // CREATE
+            cout << "Enter number of elements: ";
+            cin >> n;
+            cout << "Enter elements: ";
+            for (int i = 0; i < n; i++)
+                cin >> arr[i];
+            break;
+
+        case 2:  // DISPLAY
+            cout << "Array: ";
+            for (int i = 0; i < n; i++)
+                cout << arr[i] << " ";
+            break;
+
+        case 3:  // INSERT
+            cout << "Enter position: ";
+            cin >> pos;
+            cout << "Enter value: ";
+            cin >> val;
+            for (int i = n; i >= pos; i--)
+                arr[i] = arr[i-1];
+            arr[pos-1] = val;
+            n++;
+            break;
+
+        case 4:  // DELETE
+            cout << "Enter position: ";
+            cin >> pos;
+            for (int i = pos - 1; i < n - 1; i++)
+                arr[i] = arr[i+1];
+            n--;
+            break;
+
+        case 5:  // SEARCH
+            cout << "Enter key: ";
+            cin >> key;
+            {
+                bool found = false;
+                for (int i = 0; i < n; i++) {
+                    if (arr[i] == key) {
+                        cout << "Element found at position " << i + 1 << endl;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    cout << "Element not found\n";
+            }
+            break;
+
+        case 6:
+            return 0;
+        }
+    }
+}
+
+A2)
+#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[100], n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+
+    cout << "Enter elements: ";
+    for (int i = 0; i < n; i++)
+        cin >> arr[i];
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (arr[i] == arr[j]) {
+                for (int k = j; k < n - 1; k++)
+                    arr[k] = arr[k + 1];
+                n--;
+                j--;
+            }
+        }
+    }
+
+    cout << "Array after removing duplicates: ";
+    for (int i = 0; i < n; i++)
+        cout << arr[i] << " ";
+
+    return 0;
+}
+
+A3)
+int arr[5] = {1};
+for (int i = 0; i < 5; i++)
+    cout << arr[i];
+
+output is 10000
+
+A4)
+#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[100], n;
+    cout << "Enter size: ";
+    cin >> n;
+
+    cout << "Enter elements: ";
+    for (int i = 0; i < n; i++)
+        cin >> arr[i];
+
+    for (int i = 0; i < n/2; i++)
+        swap(arr[i], arr[n - 1 - i]);
+
+    cout << "Reversed array: ";
+    for (int i = 0; i < n; i++)
+        cout << arr[i] << " ";
+
+    return 0;
+}
+
+A4b)
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a[10][10], b[10][10], c[10][10];
+    int r1, c1, r2, c2;
+
+    cout << "Enter rows and columns of Matrix A: ";
+    cin >> r1 >> c1;
+
+    cout << "Enter rows and columns of Matrix B: ";
+    cin >> r2 >> c2;
+
+    if (c1 != r2) {
+        cout << "Matrix multiplication not possible.\n";
+        return 0;
+    }
+
+    cout << "Enter Matrix A:\n";
+    for (int i = 0; i < r1; i++)
+        for (int j = 0; j < c1; j++)
+            cin >> a[i][j];
+
+    cout << "Enter Matrix B:\n";
+    for (int i = 0; i < r2; i++)
+        for (int j = 0; j < c2; j++)
+            cin >> b[i][j];
+
+    for (int i = 0; i < r1; i++)
+        for (int j = 0; j < c2; j++) {
+            c[i][j] = 0;
+            for (int k = 0; k < c1; k++)
+                c[i][j] += a[i][k] * b[k][j];
+        }
+
+    cout << "Resultant Matrix: \n";
+    for (int i = 0; i < r1; i++) {
+        for (int j = 0; j < c2; j++)
+            cout << c[i][j] << " ";
+        cout << endl;
+    }
+
+    return 0;
+}
+
+A4c)
+#include <iostream>
+using namespace std;
+
+int main() {
+    int mat[10][10], trans[10][10], r, c;
+
+    cout << "Enter rows and columns: ";
+    cin >> r >> c;
+
+    cout << "Enter matrix:\n";
+    for (int i = 0; i < r; i++)
+        for (int j = 0; j < c; j++)
+            cin >> mat[i][j];
+
+    for (int i = 0; i < r; i++)
+        for (int j = 0; j < c; j++)
+            trans[j][i] = mat[i][j];
+
+    cout << "Transpose:\n";
+    for (int i = 0; i < c; i++) {
+        for (int j = 0; j < r; j++)
+            cout << trans[i][j] << " ";
+        cout << endl;
+    }
+
+    return 0;
+
+A5)
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a[10][10], r, c;
+
+    cout << "Enter rows and columns: ";
+    cin >> r >> c;
+
+    cout << "Enter matrix:\n";
+    for (int i = 0; i < r; i++)
+        for (int j = 0; j < c; j++)
+            cin >> a[i][j];
+
+    // Row sums
+    for (int i = 0; i < r; i++) {
+        int sum = 0;
+        for (int j = 0; j < c; j++)
+            sum += a[i][j];
+        cout << "Sum of row " << i + 1 << " = " << sum << endl;
+    }
+
+    // Column sums
+    for (int j = 0; j < c; j++) {
+        int sum = 0;
+        for (int i = 0; i < r; i++)
+            sum += a[i][j];
+        cout << "Sum of column " << j + 1 << " = " << sum << endl;
+    }
+
+    return 0;
