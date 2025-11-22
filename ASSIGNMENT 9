@@ -1,0 +1,368 @@
+A1)
+#include <iostream>
+#include <vector>
+#include <list>
+#include <queue>
+
+using namespace std;
+
+class Graph {
+    int V; // Number of vertices
+    vector<list<int>> adj; // Adjacency list
+
+public:
+    Graph(int V);
+    void addEdge(int v, int w);
+    void BFS(int s);
+};
+
+Graph::Graph(int V) {
+    this->V = V;
+    adj.resize(V);
+}
+
+void Graph::addEdge(int v, int w) {
+    adj[v].push_back(w); // Add w to v's list
+    adj[w].push_back(v); // For undirected graph
+}
+
+void Graph::BFS(int s) {
+    vector<bool> visited(V, false);
+    queue<int> queue;
+
+    visited[s] = true;
+    queue.push(s);
+
+    cout << "BFS Traversal starting from vertex " << s << ": ";
+
+    while(!queue.empty()) {
+        s = queue.front();
+        cout << s << " ";
+        queue.pop();
+
+        for(auto i : adj[s]) {
+            if(!visited[i]) {
+                visited[i] = true;
+                queue.push(i);
+            }
+        }
+    }
+    cout << endl;
+}
+
+int main() {
+    int V, E, u, v, startNode;
+    cout << "--- Breadth First Search (BFS) ---\n";
+    cout << "Enter number of vertices: ";
+    cin >> V;
+    Graph g(V);
+
+    cout << "Enter number of edges: ";
+    cin >> E;
+
+    cout << "Enter edges (u v):\n";
+    for(int i = 0; i < E; i++) {
+        cin >> u >> v;
+        g.addEdge(u, v);
+    }
+
+    cout << "Enter starting vertex: ";
+    cin >> startNode;
+
+    g.BFS(startNode);
+
+    return 0;
+}
+
+A2)
+#include <iostream>
+#include <vector>
+#include <list>
+
+using namespace std;
+
+class Graph {
+    int V;
+    vector<list<int>> adj;
+    void DFSUtil(int v, vector<bool>& visited);
+
+public:
+    Graph(int V);
+    void addEdge(int v, int w);
+    void DFS(int v);
+};
+
+Graph::Graph(int V) {
+    this->V = V;
+    adj.resize(V);
+}
+
+void Graph::addEdge(int v, int w) {
+    adj[v].push_back(w);
+    adj[w].push_back(v); // Undirected graph
+}
+
+void Graph::DFSUtil(int v, vector<bool>& visited) {
+    visited[v] = true;
+    cout << v << " ";
+
+    for(auto i : adj[v]) {
+        if(!visited[i])
+            DFSUtil(i, visited);
+    }
+}
+
+void Graph::DFS(int v) {
+    vector<bool> visited(V, false);
+    cout << "DFS Traversal starting from vertex " << v << ": ";
+    DFSUtil(v, visited);
+    cout << endl;
+}
+
+int main() {
+    int V, E, u, v, startNode;
+    cout << "--- Depth First Search (DFS) ---\n";
+    cout << "Enter number of vertices: ";
+    cin >> V;
+    Graph g(V);
+
+    cout << "Enter number of edges: ";
+    cin >> E;
+
+    cout << "Enter edges (u v):\n";
+    for(int i = 0; i < E; i++) {
+        cin >> u >> v;
+        g.addEdge(u, v);
+    }
+
+    cout << "Enter starting vertex: ";
+    cin >> startNode;
+
+    g.DFS(startNode);
+
+    return 0;
+}
+
+A3)
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+// Structure to represent a weighted edge
+struct Edge {
+    int src, dest, weight;
+};
+
+// --- For Kruskal's Algorithm (Disjoint Set Union) ---
+struct DSU {
+    int* parent;
+    int* rank;
+    int n;
+
+    DSU(int n) {
+        this->n = n;
+        parent = new int[n];
+        rank = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            rank[i] = 0;
+        }
+    }
+
+    int find(int i) {
+        if (parent[i] == i)
+            return i;
+        return parent[i] = find(parent[i]);
+    }
+
+    void unite(int x, int y) {
+        int s1 = find(x);
+        int s2 = find(y);
+        if (s1 != s2) {
+            if (rank[s1] < rank[s2])
+                parent[s1] = s2;
+            else if (rank[s1] > rank[s2])
+                parent[s2] = s1;
+            else {
+                parent[s2] = s1;
+                rank[s1]++;
+            }
+        }
+    }
+};
+
+bool compareEdges(Edge a, Edge b) {
+    return a.weight < b.weight;
+}
+
+void kruskalMST(vector<Edge>& edges, int V) {
+    sort(edges.begin(), edges.end(), compareEdges);
+    DSU s(V);
+    int mstWeight = 0;
+    cout << "\nEdges in Kruskal's MST:\n";
+    for (auto edge : edges) {
+        if (s.find(edge.src) != s.find(edge.dest)) {
+            s.unite(edge.src, edge.dest);
+            mstWeight += edge.weight;
+            cout << edge.src << " -- " << edge.dest << " == " << edge.weight << endl;
+        }
+    }
+    cout << "Total Weight of MST: " << mstWeight << endl;
+}
+
+// --- For Prim's Algorithm ---
+typedef pair<int, int> iPair; // weight, vertex
+
+void primMST(vector<vector<iPair>>& adj, int V) {
+    priority_queue<iPair, vector<iPair>, greater<iPair>> pq;
+    int src = 0; // Starting from vertex 0
+    vector<int> key(V, 1e9);
+    vector<int> parent(V, -1);
+    vector<bool> inMST(V, false);
+
+    pq.push(make_pair(0, src));
+    key[src] = 0;
+
+    int mstWeight = 0;
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        if (inMST[u]) continue;
+        inMST[u] = true;
+        mstWeight += key[u];
+
+        for (auto x : adj[u]) {
+            int v = x.first;
+            int weight = x.second;
+            if (!inMST[v] && key[v] > weight) {
+                key[v] = weight;
+                pq.push(make_pair(key[v], v));
+                parent[v] = u;
+            }
+        }
+    }
+
+    cout << "\nEdges in Prim's MST:\n";
+    for (int i = 1; i < V; ++i)
+        cout << parent[i] << " -- " << i << " == " << key[i] << endl;
+    cout << "Total Weight of MST: " << mstWeight << endl;
+}
+
+int main() {
+    int V, E, u, v, w, choice;
+    cout << "Enter number of vertices: ";
+    cin >> V;
+    cout << "Enter number of edges: ";
+    cin >> E;
+
+    vector<Edge> edges;
+    vector<vector<iPair>> adj(V);
+
+    cout << "Enter edges (u v w):\n";
+    for (int i = 0; i < E; i++) {
+        cin >> u >> v >> w;
+        edges.push_back({u, v, w});
+        adj[u].push_back(make_pair(v, w));
+        adj[v].push_back(make_pair(u, w));
+    }
+
+    cout << "\nChoose Algorithm:\n1. Kruskal's Algorithm\n2. Prim's Algorithm\nEnter choice: ";
+    cin >> choice;
+
+    if (choice == 1) kruskalMST(edges, V);
+    else if (choice == 2) primMST(adj, V);
+    else cout << "Invalid choice";
+
+    return 0;
+}
+
+A4)
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <limits>
+
+using namespace std;
+
+// Pair: <weight, vertex>
+typedef pair<int, int> iPair;
+
+class Graph {
+    int V;
+    vector<vector<iPair>> adj;
+
+public:
+    Graph(int V);
+    void addEdge(int u, int v, int w);
+    void shortestPath(int src);
+};
+
+Graph::Graph(int V) {
+    this->V = V;
+    adj.resize(V);
+}
+
+void Graph::addEdge(int u, int v, int w) {
+    adj[u].push_back(make_pair(v, w));
+    adj[v].push_back(make_pair(u, w)); // Undirected weighted graph
+}
+
+void Graph::shortestPath(int src) {
+    priority_queue<iPair, vector<iPair>, greater<iPair>> pq;
+    vector<int> dist(V, numeric_limits<int>::max());
+
+    pq.push(make_pair(0, src));
+    dist[src] = 0;
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        for (auto x : adj[u]) {
+            int v = x.first;
+            int weight = x.second;
+
+            if (dist[v] > dist[u] + weight) {
+                dist[v] = dist[u] + weight;
+                pq.push(make_pair(dist[v], v));
+            }
+        }
+    }
+
+    cout << "\nVertex \t Distance from Source " << src << endl;
+    for (int i = 0; i < V; ++i) {
+        if (dist[i] == numeric_limits<int>::max())
+            cout << i << " \t INF" << endl;
+        else
+            cout << i << " \t " << dist[i] << endl;
+    }
+}
+
+int main() {
+    int V, E, u, v, w, src;
+    cout << "--- Dijkstra's Shortest Path Algorithm ---\n";
+    cout << "Enter number of vertices: ";
+    cin >> V;
+    Graph g(V);
+
+    cout << "Enter number of edges: ";
+    cin >> E;
+
+    cout << "Enter edges (u v w):\n";
+    for(int i = 0; i < E; i++) {
+        cin >> u >> v >> w;
+        g.addEdge(u, v, w);
+    }
+
+    cout << "Enter source vertex: ";
+    cin >> src;
+
+    g.shortestPath(src);
+
+    return 0;
+}
